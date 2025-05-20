@@ -4,7 +4,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
+import { Button } from "./ui/button";
 import CCheck from "./ui/ccheck";
+import { Input } from "./ui/input";
 
 const category = [
   "Used Phone",
@@ -115,19 +117,56 @@ export default function SideFilter() {
             <AccordionTrigger className="hover:cursor-pointer">
               Minimum Order
             </AccordionTrigger>
-            <AccordionContent></AccordionContent>
+            <AccordionContent>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  placeholder="Minimum Order"
+                  className="focus:ring-inset"
+                />
+                <Button variant="default" size="default">
+                  Ok
+                </Button>
+              </div>
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem className="border-b" value="item-5">
             <AccordionTrigger className="hover:cursor-pointer">
               Stock Options
             </AccordionTrigger>
-            <AccordionContent></AccordionContent>
+            <AccordionContent>
+              <div className="flex flex-row gap-2 items-center">
+                <Input
+                  placeholder="Minimum Stock"
+                  className="focus:ring-inset"
+                />
+                <Button variant="default" size="default">
+                  Ok
+                </Button>
+              </div>
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem className="border-b" value="item-6">
             <AccordionTrigger className="hover:cursor-pointer">
               Price Range
             </AccordionTrigger>
-            <AccordionContent></AccordionContent>
+            <AccordionContent>
+              <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-row gap-2 items-center">
+                  <Input
+                    placeholder="Min"
+                    className="focus:ring-inset"
+                  />
+                  -
+                  <Input
+                    placeholder="Max"
+                    className="focus:ring-inset"
+                  />
+                </div>
+                <Button variant="default" size="default">
+                  Ok
+                </Button>
+              </div>
+            </AccordionContent>
           </AccordionItem>
           <AccordionItem className="border-b" value="item-8">
             <AccordionTrigger className="hover:cursor-pointer">
