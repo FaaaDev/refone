@@ -14,6 +14,7 @@ export const productRouter = router({
     .query(async ({ input }) => {
       const product = await prisma.product.findUnique({
         where: { slug: input.slug },
+        include: { galleries: true },
       });
 
       if (!product) {

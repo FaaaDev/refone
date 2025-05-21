@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/lib/trpc";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -10,6 +9,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import LoadingDetail from "@/components/loading_detail";
 
 const colors = ["Grey", "Mindnight", "Space Blue", "White"];
 const storage = ["128 GB", "256 GB", "512 GB", "1 TB"];
@@ -23,79 +23,19 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedStorage, setSelectedStorage] = useState(0);
   const [selectedGrade, setSelectedGrade] = useState(0);
+  const [selectedImage, setSelectedImage] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    if (!isLoading) setSelectedImage(data.imageUrl);
+  }, [data]);
+
   if (isLoading) {
     return (
-      <div className="p-4 md:p-8 max-w-full md:max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-row gap-6">
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex flex-col md:flex-row gap-6 w-full">
-              <div className="flex flex-col w-full gap-4">
-                <Skeleton className="h-100 w-full rounded-xl" />
-                <div className="flex flex-row gap-4">
-                  <Skeleton className="h-16 w-16 rounded-xl" />
-                  <Skeleton className="h-16 w-16 rounded-xl" />
-                  <Skeleton className="h-16 w-16 rounded-xl" />
-                  <Skeleton className="h-16 w-16 rounded-xl" />
-                </div>
-              </div>
-              <div className="flex flex-col w-full gap-4">
-                <Skeleton className="h-8 w-[100%] rounded-xl" />
-                <Skeleton className="h-6 w-[20%] rounded-xl" />
-                <Skeleton className="h-8 w-[60%] rounded-xl" />
-                <Skeleton className="h-5 w-[10%] rounded-xl mt-4" />
-                <div className="flex flex-row w-full gap-2">
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                </div>
-                <Skeleton className="h-5 w-[10%] rounded-xl mt-4" />
-                <div className="flex flex-row w-full gap-2">
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                </div>
-                <Skeleton className="h-5 w-[10%] rounded-xl mt-4" />
-                <div className="flex flex-row w-full gap-2">
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                  <Skeleton className="h-10 w-[15%] rounded-xl" />
-                </div>
-              </div>
-            </div>
-            <Skeleton className="h-8 w-[30%] rounded-xl mt-6" />
-            <Skeleton className="h-6 w-[90%] rounded-xl" />
-            <Skeleton className="h-6 w-[70%] rounded-xl" />
-            <Skeleton className="h-6 w-[80%] rounded-xl" />
-
-            <Skeleton className="h-8 w-[30%] rounded-xl mt-6" />
-            <Skeleton className="h-6 w-[70%] rounded-xl" />
-            <Skeleton className="h-6 w-[80%] rounded-xl" />
-            <Skeleton className="h-6 w-[80%] rounded-xl" />
-          </div>
-          <div className="w-120 h-fit border rounded-xl sticky top-8 p-6 flex-col gap-4 hidden xl:flex">
-                <Skeleton className="h-5 w-[30%] rounded-xl" />
-                <div className="flex flex-row w-full justify-between">
-                  <Skeleton className="h-5 w-[30%] rounded-xl" />
-                  <Skeleton className="h-5 w-[35%] rounded-xl" />
-                </div>
-                <div className="flex flex-row w-full justify-between">
-                  <Skeleton className="h-5 w-[25%] rounded-xl" />
-                  <Skeleton className="h-5 w-[30%] rounded-xl" />
-                </div>
-                <div className="flex flex-row w-full justify-between mt-5">
-                  <Skeleton className="h-5 w-[40%] rounded-xl" />
-                  <Skeleton className="h-5 w-[35%] rounded-xl" />
-                </div>
-                <Skeleton className="h-10 w-full rounded-xl mt-6" />
-                <Skeleton className="h-10 w-full rounded-xl" />
-              </div>
-        </div>
-      </div>
+      <LoadingDetail />
     );
   }
 
@@ -115,31 +55,23 @@ export default function ProductDetailPage() {
               {/* Product Images and Gallery */}
               <div className="flex flex-col w-full gap-4">
                 <img
-                  src={data?.imageUrl || ""}
+                  src={selectedImage || ""}
                   alt=""
                   className="rounded-xl h-100 object-cover border"
                 />
                 <div className="flex flex-row gap-4">
-                  <img
-                    src={data?.imageUrl || ""}
-                    alt=""
-                    className="rounded-md h-16 w-16 object-cover border"
-                  />
-                  <img
-                    src={data?.imageUrl || ""}
-                    alt=""
-                    className="rounded-md h-16 w-16 object-cover border"
-                  />
-                  <img
-                    src={data?.imageUrl || ""}
-                    alt=""
-                    className="rounded-md h-16 w-16 object-cover border"
-                  />
-                  <img
-                    src={data?.imageUrl || ""}
-                    alt=""
-                    className="rounded-md h-16 w-16 object-cover border"
-                  />
+                  {[...[{ imageUrl: data?.imageUrl }], ...data?.galleries].map(
+                    (v) => {
+                      return (
+                        <img
+                          src={v.imageUrl || ""}
+                          alt=""
+                          className={`${selectedImage === v.imageUrl ? "border-primary border-4 " : "border "}rounded-md h-16 w-16 object-cover hover:border-4 hover:border-primary hover: cursor-pointer`}
+                          onClick={() => setSelectedImage(v.imageUrl)}
+                        />
+                      );
+                    }
+                  )}
                 </div>
               </div>
               {/* Product Details */}
@@ -203,13 +135,7 @@ export default function ProductDetailPage() {
             <div className="flex flex-col gap-4 w-full mt-6">
               <h1 className="text-2xl font-bold">Product Description</h1>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
+                {data.description}
               </p>
             </div>
             {/* Product Spesification */}
@@ -265,7 +191,7 @@ export default function ProductDetailPage() {
                       className="text-yellow-400 text-sm"
                     />
                     <p className="text-sm">5</p>
-                    <Progress value={90} className="w-xs lg:w-md" />
+                    <Progress value={90} className="w-45 lg:w-md" />
                     <p className="text-sm text-gray-400">(200)</p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
@@ -274,7 +200,7 @@ export default function ProductDetailPage() {
                       className="text-yellow-400 text-sm"
                     />
                     <p className="text-sm">4</p>
-                    <Progress value={10} className="w-xs lg:w-md" />
+                    <Progress value={10} className="w-45 lg:w-md" />
                     <p className="text-sm text-gray-400">(20)</p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
@@ -283,7 +209,7 @@ export default function ProductDetailPage() {
                       className="text-yellow-400 text-sm"
                     />
                     <p className="text-sm">3</p>
-                    <Progress value={0} className="w-xs lg:w-md" />
+                    <Progress value={0} className="w-45 lg:w-md" />
                     <p className="text-sm text-gray-400">(0)</p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
@@ -292,7 +218,7 @@ export default function ProductDetailPage() {
                       className="text-yellow-400 text-sm"
                     />
                     <p className="text-sm">2</p>
-                    <Progress value={0} className="w-xs lg:w-md" />
+                    <Progress value={0} className="w-45 lg:w-md" />
                     <p className="text-sm text-gray-400">(0)</p>
                   </div>
                   <div className="flex flex-row gap-1 items-center">
@@ -301,7 +227,7 @@ export default function ProductDetailPage() {
                       className="text-yellow-400 text-sm"
                     />
                     <p className="text-sm">1</p>
-                    <Progress value={0} className="w-xs lg:w-md" />
+                    <Progress value={0} className="w-45 lg:w-md" />
                     <p className="text-sm text-gray-400">(0)</p>
                   </div>
                 </div>
@@ -436,7 +362,7 @@ export default function ProductDetailPage() {
             <h6 className="font-bold pb-4">Process Order</h6>
             <div className="flex flex-row gap-2 justify-between items-center w-full">
               <p className="text-sm font-bold">Stock</p>
-              <p className="text-sm">1.320 Pcs</p>
+              <p className="text-sm">{data.stockQuantity} Pcs</p>
             </div>
             <div className="flex flex-row gap-2 justify-between items-center w-full">
               <p className="text-sm font-bold">Quantity</p>
