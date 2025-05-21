@@ -9,10 +9,13 @@ export default function UsedPhonesPage() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {[...Array(8)].map((_, i) => (
-          <Skeleton key={i} className="h-[300px] w-full rounded-xl" />
-        ))}
+      <div className="p-4 md:p-8 max-w-full md:max-w-7xl mx-auto flex flex-row gap-0 md:gap-6">
+        <Skeleton className="h-250 w-xs rounded-xl hidden md:block" />
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
+          {[...Array(20)].map((_, i) => (
+            <Skeleton key={i} className="h-[300px] w-full rounded-xl" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -29,12 +32,19 @@ export default function UsedPhonesPage() {
       <SideFilter />
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
         {data.map((product, idx) => (
-          <div key={idx} className="flex flex-col overflow-hidden py-2 gap-2 border rounded-xl hover:shadow-lg hover:cursor-pointer">
-            <Link to={`/product-detail/${product.slug}`} key={product.slug} className="h-46 object-cover mx-2">
+          <div
+            key={idx}
+            className="flex flex-col overflow-hidden py-2 gap-2 border rounded-xl hover:shadow-lg hover:cursor-pointer"
+          >
+            <Link
+              to={`/product-detail/${product.slug}`}
+              key={product.slug}
+              className="h-46 object-cover mx-2"
+            >
               <img
                 src={product.imageUrl ?? ""}
                 alt={product.name}
-                className="rounded-lg"
+                className="rounded-lg h-50 w-full object-cover"
               />
             </Link>
             <div className="px-2 space-y-2 flex flex-col justify-between h-full">
