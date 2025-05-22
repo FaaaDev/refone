@@ -1,8 +1,8 @@
 FROM oven/bun:1.1.13
 
-WORKDIR /app
+WORKDIR /apps
 
-COPY bun.lockb package.json ./
+COPY package.json ./
 
 RUN bun install
 
@@ -14,4 +14,4 @@ RUN bunx prisma generate --schema=$PRISMA_SCHEMA
 
 EXPOSE 3000
 
-CMD ["bun", "run", "start"]
+CMD ["sh", "-c", "bunx prisma migrate deploy --schema=$PRISMA_SCHEMA && bun run seed && bun run start"]

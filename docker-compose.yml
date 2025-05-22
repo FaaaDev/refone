@@ -1,17 +1,15 @@
-version: "3.8"
-
 services:
   db:
-    image: postgres:16
+    image: postgres
     container_name: refone-db
     ports:
-      - "5432:5432"
+      - "55432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB=refone
-      POSTGRES_USER=postgres
-      POSTGRES_PASSWORD=postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: refone
 
   api:
     build:
@@ -23,15 +21,20 @@ services:
     env_file:
       - ./apps/api/.env
     environment:
-      DATABASE_URL=postgresql://postgres:postgres@db:5432/refone
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/refone
+      PORT: 3000
     depends_on:
       - db
 
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/web/Dockerfile
+    volumes:
+      - ./apps/web:/apps/web
+      - ./apps/api:/apps/api
     container_name: refone-web
+    working_dir: /apps/web
     ports:
       - "3003:3003"
     env_file:

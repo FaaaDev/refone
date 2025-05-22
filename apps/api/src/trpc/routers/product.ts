@@ -1,8 +1,8 @@
 import { prisma } from "../../lib/prisma";
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { publicProcedure, route } from "../trpc";
 
-export const productRouter = router({
+export const productRouter = route({
   all: publicProcedure.query(async () => {
     return await prisma.product.findMany({
       orderBy: { createdAt: "desc" },

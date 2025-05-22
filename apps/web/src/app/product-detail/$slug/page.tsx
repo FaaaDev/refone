@@ -30,8 +30,8 @@ export default function ProductDetailPage() {
   }, []);
 
   useEffect(() => {
-    if (!isLoading) setSelectedImage(data.imageUrl);
-  }, [data]);
+    if (!isLoading) setSelectedImage(data?.imageUrl || "");
+  }, [isLoading]);
 
   if (isLoading) {
     return (
@@ -60,14 +60,14 @@ export default function ProductDetailPage() {
                   className="rounded-xl h-100 object-cover border"
                 />
                 <div className="flex flex-row gap-4">
-                  {[...[{ imageUrl: data?.imageUrl }], ...data?.galleries].map(
+                  {[...[{ imageUrl: data?.imageUrl }], ...data?.galleries || []].map(
                     (v) => {
                       return (
                         <img
                           src={v.imageUrl || ""}
                           alt=""
                           className={`${selectedImage === v.imageUrl ? "border-primary border-4 " : "border "}rounded-md h-16 w-16 object-cover hover:border-4 hover:border-primary hover: cursor-pointer`}
-                          onClick={() => setSelectedImage(v.imageUrl)}
+                          onClick={() => setSelectedImage(v?.imageUrl || "")}
                         />
                       );
                     }
@@ -79,7 +79,7 @@ export default function ProductDetailPage() {
                 <div className="space-y-2 border-b pb-4">
                   <h1 className="text-2xl font-bold">{data?.name}</h1>
                   <p className="text-muted-foreground">
-                    Minimum order: {data?.minimumOrderQuantity} Pcs
+                    Minimum order: {data?.minimumOrderQuantity || 0} Pcs
                   </p>
                   <h1 className="text-2xl font-bold">US${data?.price}</h1>
                 </div>

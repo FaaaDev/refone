@@ -1,8 +1,19 @@
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
-import type Product from "@/app/interface/product";
 
-
+type ProductType = {
+  name: string;
+  id: string;
+  sku: string;
+  slug: string;
+  description: string;
+  price: string;
+  imageUrl: string | null;
+  stockQuantity: number;
+  minimumOrderQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export default function ItemGrid({
   key,
@@ -10,8 +21,8 @@ export default function ItemGrid({
   onChat,
 }: {
   key: string;
-  product: Product;
-  onChat: Function
+  product: ProductType;
+  onChat: () => void
 }) {
   return (
     <div
