@@ -37,8 +37,6 @@ services:
     working_dir: /apps/web
     ports:
       - "3003:3003"
-    env_file:
-      - ./apps/web/.env
     depends_on:
       - api
 
