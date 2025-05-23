@@ -18,5 +18,5 @@ RUN bun run build
 
 RUN bun add -g serve
 
-EXPOSE 3003
-CMD ["serve", "-s", "dist", "-l", "3003"]
+EXPOSE 3005
+CMD ["serve", "-s", "dist", "-l", "3005"]

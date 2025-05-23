@@ -188,6 +188,8 @@ async function main() {
         imageUrl: url,
       })),
     });
+
+    console.log(`Created product: ${createdProduct.name}`);
   }
 }
 

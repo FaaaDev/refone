@@ -36,7 +36,10 @@ services:
     container_name: refone-web
     working_dir: /apps/web
     ports:
-      - "3003:3003"
+      - "3005:3005"
+    environment:
+      VITE_APP_API_URL: http://localhost:3000
+      VITE_APP_ENVIRONTMENT: production
     depends_on:
       - api
 
