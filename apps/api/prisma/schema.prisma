@@ -29,3 +29,13 @@ model product_gallery {
   imageUrl  String
   createdAt DateTime @default(now())
 }
+
+model search_query {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  query     String
+  count     Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([query])
+}
