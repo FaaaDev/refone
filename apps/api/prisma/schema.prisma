@@ -7,16 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Product {
-  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sku                   String   @unique
-  slug                  String   @unique
+model product {
+  id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku                   String            @unique
+  slug                  String            @unique
   name                  String
   description           String
   price                 Decimal
   imageUrl              String?
   stockQuantity         Int
   minimumOrderQuantity  Int
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  galleries             product_gallery[] // <- Relasi satu ke banyak
+}
+
+model product_gallery {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product   product  @relation(fields: [productId], references: [id])
+  productId String   @db.Uuid
+  imageUrl  String
+  createdAt DateTime @default(now())
 }
