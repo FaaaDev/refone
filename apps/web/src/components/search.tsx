@@ -42,12 +42,22 @@ export default function Search({
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
       ) {
-        setShowDropdown(false);
+        if (!isMobile) {
+          setShowDropdown(false);
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleChange = (query: string) => {
+    setSearch(query);
+    setShowDropdown(false);
+    console.log(query);
+
+    if (query.length > 1) navigate(`/search/${query}`);
+  };
 
   if (isMobile) {
     return (
@@ -64,30 +74,60 @@ export default function Search({
               setShowDropdown(true);
             }}
             onClick={() => {
-              console.log("CLICK");
-
               setShowDropdown(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleChange(search);
+              }
             }}
             placeholder="Search in Refone"
             className="w-full"
           />
           {showDropdown && (
             <div className="absolute top-26 left-8 right-8 mt-1 bg-white border rounded-md shadow z-50 max-h-60 overflow-auto p-2 md:hidden">
-              {!isLoading && !loadingSearch
-                ? Array.from({ length: 8 }).map((item, i) => (
+              {!isLoading && !loadingSearch ? (
+                searchData?.length && search.length > 1 ? (
+                  searchData?.map((item: QueryType, i: number) => (
                     <div
-                      key={i}
+                      key={`item-mobile-${i}`}
                       className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
-                      onClick={() => {}}
+                      onClick={() => {
+                        handleChange(item.query);
+                      }}
                     >
-                      Search Query
+                      {item.query}
                     </div>
                   ))
-                : Array.from({ length: 3 }).map((_, i) => (
-                    <div className="p-2" key={i}>
-                      <Skeleton className="w-full h-5 rounded-md" />
+                ) : search.length == 0 ? (
+                  data?.map((item: QueryType, i) => (
+                    <div
+                      key={`item-mobile-${i}`}
+                      className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
+                      onClick={() => {
+                        handleChange(item.query);
+                      }}
+                    >
+                      {item.query}
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <div
+                    className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
+                    onClick={() => {
+                      handleChange(search);
+                    }}
+                  >
+                    Search for {search}
+                  </div>
+                )
+              ) : (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div className="p-2" key={i}>
+                    <Skeleton className="w-full h-5 rounded-md" />
+                  </div>
+                ))
+              )}
             </div>
           )}
           <Button variant="outline" size="icon">
@@ -118,6 +158,11 @@ export default function Search({
           onClick={() => {
             setShowDropdown(true);
           }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleChange(search);
+            }
+          }}
           placeholder="Search in Refone"
           className="w-full"
         />
@@ -129,7 +174,9 @@ export default function Search({
                   <div
                     key={i}
                     className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
-                    onClick={() => {}}
+                    onClick={() => {
+                      handleChange(item.query);
+                    }}
                   >
                     {item.query}
                   </div>
@@ -139,7 +186,9 @@ export default function Search({
                   <div
                     key={i}
                     className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
-                    onClick={() => {}}
+                    onClick={() => {
+                      handleChange(item.query);
+                    }}
                   >
                     {item.query}
                   </div>
@@ -147,7 +196,9 @@ export default function Search({
               ) : (
                 <div
                   className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
-                  onClick={() => {}}
+                  onClick={() => {
+                    handleChange(search);
+                  }}
                 >
                   Search for {search}
                 </div>

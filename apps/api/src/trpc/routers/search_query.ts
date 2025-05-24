@@ -6,7 +6,7 @@ export const queryRouter = route({
   suggestions: publicProcedure.query(async () => {
     return await prisma.search_query.findMany({
       orderBy: { count: "desc" },
-      take: 5,
+      take: 10,
     });
   }),
   search: publicProcedure
@@ -20,7 +20,7 @@ export const queryRouter = route({
         },
       },
       orderBy: { count: "desc" },
-      take: 5,
+      take: 10,
     });
   }),
 });
