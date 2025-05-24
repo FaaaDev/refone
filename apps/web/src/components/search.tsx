@@ -5,6 +5,7 @@ import { useWindowScrollPositions } from "@/lib/scroll";
 import { Button } from "./ui/button";
 import { FilterIcon } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Skeleton } from "./ui/skeleton";
 
 type QueryType = {
   query: string;
@@ -26,12 +27,14 @@ export default function Search({
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data } = trpc.search_query.suggestions.useQuery<QueryType[]>();
+  const { data, isLoading } =
+    trpc.search_query.suggestions.useQuery<QueryType[]>();
 
-  const { data: searchData } = trpc.search_query.search.useQuery<QueryType[]>(
-    { q: search },
-    { enabled: search.length > 1 }
-  );
+  const { data: searchData, isLoading: loadingSearch } =
+    trpc.search_query.search.useQuery<QueryType[]>(
+      { q: search },
+      { enabled: search.length > 1 }
+    );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -70,15 +73,21 @@ export default function Search({
           />
           {showDropdown && (
             <div className="absolute top-26 left-8 right-8 mt-1 bg-white border rounded-md shadow z-50 max-h-60 overflow-auto p-2 md:hidden">
-              {Array.from({ length: 8 }).map((item, i) => (
-                <div
-                  key={i}
-                  className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
-                  onClick={() => {}}
-                >
-                  Search Query
-                </div>
-              ))}
+              {!isLoading && !loadingSearch
+                ? Array.from({ length: 8 }).map((item, i) => (
+                    <div
+                      key={i}
+                      className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
+                      onClick={() => {}}
+                    >
+                      Search Query
+                    </div>
+                  ))
+                : Array.from({ length: 3 }).map((_, i) => (
+                    <div className="p-2" key={i}>
+                      <Skeleton className="w-full h-5 rounded-md" />
+                    </div>
+                  ))}
             </div>
           )}
           <Button variant="outline" size="icon">
@@ -114,8 +123,9 @@ export default function Search({
         />
         {showDropdown && (
           <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow z-50 max-h-60 overflow-auto p-2">
-            {searchData?.length
-              ? searchData?.map((item: QueryType, i: number) => (
+            {!isLoading && !loadingSearch ? (
+              searchData?.length && search.length > 1 ? (
+                searchData?.map((item: QueryType, i: number) => (
                   <div
                     key={i}
                     className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
@@ -124,7 +134,8 @@ export default function Search({
                     {item.query}
                   </div>
                 ))
-              : data?.map((item: QueryType, i) => (
+              ) : search.length == 0 ? (
+                data?.map((item: QueryType, i) => (
                   <div
                     key={i}
                     className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
@@ -132,7 +143,22 @@ export default function Search({
                   >
                     {item.query}
                   </div>
-                ))}
+                ))
+              ) : (
+                <div
+                  className="p-2 hover:bg-gray-100 cursor-pointer text-sm rounded-md"
+                  onClick={() => {}}
+                >
+                  Search for {search}
+                </div>
+              )
+            ) : (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div className="p-2" key={i}>
+                  <Skeleton className="w-full h-5 rounded-md" />
+                </div>
+              ))
+            )}
           </div>
         )}
       </div>

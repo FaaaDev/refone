@@ -23,31 +23,36 @@ export const productRouter = route({
 
       return product;
     }),
-  
-    search: publicProcedure
-  .input(z.object({ q: z.string().min(1) }))
-  .query(async ({ input }) => {
-    const keyword = input.q.trim().toLowerCase();
 
-    await prisma.search_query.upsert({
-      where: { query: keyword },
-      update: { count: { increment: 1 } },
-      create: { query: keyword },
-    });
+  search: publicProcedure
+    .input(z.object({ q: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const keyword = input.q.trim().toLowerCase();
 
-    return await prisma.product.findMany({
-      where: {
-        name: {
-          contains: keyword,
-          mode: "insensitive",
+      await prisma.search_query.upsert({
+        where: { query: keyword },
+        update: { count: { increment: 1 } },
+        create: { query: keyword },
+      });
+
+      return await prisma.product.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: keyword,
+                mode: "insensitive",
+              },
+            },
+            {
+              description: {
+                contains: keyword,
+                mode: "insensitive",
+              },
+            },
+          ],
         },
-        description: {
-          contains: keyword,
-          mode: "insensitive",
-        }
-      },
-      orderBy: { createdAt: "desc" },
-      include: { galleries: true },
-    });
-  }),
+        orderBy: { createdAt: "desc" },
+      });
+    }),
 });
