@@ -134,4 +134,8 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  .block-ui {
+    background-color: #00000095;
+  }
 }
