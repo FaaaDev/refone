@@ -8,6 +8,7 @@ import { trpc } from "@/lib/trpc";
 import { Skeleton } from "./ui/skeleton";
 
 type QueryType = {
+  id: string;
   query: string;
   count: number;
   createdAt: string;
