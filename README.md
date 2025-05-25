@@ -1,84 +1,196 @@
-# Turborepo starter
+# 📱 Refone — Used Mobile Phones Marketplace
 
-This Turborepo starter is maintained by the Turborepo core team.
+Refone is a fullstack web application replicating the "Used Mobile Phones" feature from Alibaba. Built using modern technologies for frontend and backend.
 
-## Using this example
+---
+## 🤌🏻 Short Story
 
-Run the following command:
+This project was created to fulfill the technical test for PT. AKP recruitment.
+I have never created a monorepo project using javascript before. This is a challenge for me, where I have to learn about the recommended tech stack in the recruitment process.
+The time I need to learn (from the initial setup) is 1 day. Then after that I learn by doing.
+Then in 7 days I can complete the main task in this technical test. Currently there is still time until June 1, so I will try to complete the optional tasks.
 
-```sh
-npx create-turbo@latest
-```
+---
 
-## What's inside?
+## 🧰 Tech Stack
 
-This Turborepo includes the following packages/apps:
+### Frontend
+- **Vite** with **React Router v7**
+- **Tailwind CSS** with **shadcn/ui**
 
-### Apps and Packages
+### Backend
+- **Bun** (JavaScript runtime)
+- **Hono** web framework
+- **tRPC** for typesafe API routing
+- **Zod** for validation
+- **Prisma** ORM
+- **PostgreSQL** for database
+- **Docker** for containerization
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## 📁 Project Structure
 
 ```
-cd my-turborepo
-pnpm build
+refone/
+├── apps/
+│   ├── api/                 # Backend source code
+│   │   ├── prisma/          # Prisma schema, migrations, and seeders
+│   │   ├── src/
+│   │   │   ├── lib/         # Helpers (e.g., Prisma Client)
+│   │   │   ├── trpc/        # All route handlers
+│   │   │   └── index.ts     # Server entrypoint
+│   │   └── bun.lockb        # Bun lockfile
+│   └── web/                 # Frontend source (React + Tailwind)
+├── docker-compose.yml       # Docker Compose config
+└── README.md                # Project documentation
 ```
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+## 🚀 Getting Started
 
-```
-cd my-turborepo
-pnpm dev
-```
+### 🧾 Prerequisites
 
-### Remote Caching
+- [Docker](https://www.docker.com/)
+- [Bun](https://bun.sh/) (for local development)
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+---
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+## 🐳 Run with Docker
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+### 1. Clone the Repository
 
-```
-cd my-turborepo
-npx turbo login
+```bash
+git clone https://github.com/yourusername/refone.git
+cd refone
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### 2. Configure Environment
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+Copy the `.env.example` to `.env`:
+
+```bash
+cp apps/api/.env.example apps/api/.env
+```
+
+### 3. Start the Services
+```bash
+cd ../../
+```
+
+```bash
+docker compose build --no-cache
+docker compose up
+```
+
+> API will be available at `http://localhost:3000` and PostgreSQL at `localhost:5432`
+
+### 4. Run Seeding Manually (if seeding not working)
+```bash
+cd apps/api
+```
+
+Change DATABASE_URL in .env to
+```
+DATABASE_URL="postgresql://postgres:postgres@localhost:55432/refone"
+```
+
+```bash
+bunx prisma migrate deploy
+```
+
+```bash
+bunx prisma generate
+```
 
 ```
-npx turbo link
+bun run seed
+```
+---
+
+## 🛠️ Run Locally (Bun)
+
+### 1. Install Bun
+
+```bash
+curl -fsSL https://bun.sh/install | bash
 ```
 
-## Useful Links
+### 2. Setup Backend (API)
 
-Learn more about the power of Turborepo:
+```bash
+cd apps/api
+cp .env.example .env
+bun install
+```
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+### 3. Apply Migrations
+
+If this is your first time:
+
+```bash
+bunx prisma migrate dev --name init
+```
+
+If the database is already initialized:
+
+```bash
+bunx prisma migrate deploy
+```
+
+### 4. Generate Prisma Client
+
+```bash
+bunx prisma generate
+```
+
+### 5. Seed Initial Data
+
+```bash
+bun run seed
+```
+
+### 6. Start Development Server
+
+```bash
+bun run dev
+```
+
+API will run on `http://localhost:3000` by default.
+
+---
+
+### 7. Setup Frontend (WEB)
+
+```bash
+cd apps/web
+cp .env.example .env
+bun install
+```
+
+```bash
+bun run dev
+```
+
+WEB will run on `http://localhost:5173` by default.
+
+### 7. Using Turbo (API & WEB)
+
+Make sure you has finish setup for ```.env``` each side (API & Web) and finishing prisma setup (Step 1-5)
+
+Run this command from project root directory
+
+```bash
+bun rub install
+bun run dev
+```
+
+
+
+## 🤝 Contribution
+
+Pull requests are welcome! Please fork this repository and submit a PR.
+
+---
+
