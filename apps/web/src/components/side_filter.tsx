@@ -7,15 +7,15 @@ import {
 import { Button } from "./ui/button";
 import CCheck from "./ui/ccheck";
 import { Input } from "./ui/input";
+import { trpc } from "@/lib/trpc";
 
-const category = [
-  "Used Phone",
-  "Refurbish",
-  "5G Smartphone",
-  "Feature Phone",
-  "Rugged Phone",
-  "Chargers & Adapters",
-];
+type CategoryType = {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 const shipping = [
   "JNE YES",
@@ -61,7 +61,19 @@ const warranty = [
   "36 Month",
 ];
 
-export default function SideFilter() {
+export default function SideFilter({
+  onChangeCategory,
+  onChangeSort,
+  selectedSort = "createdAt",
+  selectedCategoryId,
+}: {
+  onChangeCategory?: (category: string[]) => void;
+  onChangeSort?: (category: string) => void;
+  selectedSort?: string;
+  selectedCategoryId?: string[];
+}) {
+  const { data: category } = trpc.category.all.useQuery<CategoryType[]>();
+
   return (
     <div className="h-250 w-xs border rounded-xl hidden md:block sticky overflow-hidden top-8">
       <h6 className="font-bold p-4">Filter</h6>
@@ -75,7 +87,14 @@ export default function SideFilter() {
       >
         <Accordion
           type="multiple"
-          defaultValue={["item-1", "item-2", "item-3", "item-5", "item-6"]}
+          defaultValue={[
+            "item-1",
+            "item-2",
+            "item-3",
+            "item-5",
+            "item-6",
+            "item-13",
+          ]}
         >
           <AccordionItem className="border-b" value="item-1">
             <AccordionTrigger className="hover:cursor-pointer">
@@ -83,9 +102,96 @@ export default function SideFilter() {
             </AccordionTrigger>
             <AccordionContent>
               <div className="flex flex-col gap-2">
-                {category.map((v) => (
-                  <CCheck label={v} />
+                {category?.map((v) => (
+                  <CCheck
+                    label={v.name}
+                    value={
+                      selectedCategoryId?.some((id) => id === v.id) || false
+                    }
+                    onChange={(check) => {
+                      if (check) {
+                        const newCategory = [
+                          ...(selectedCategoryId || []),
+                          v.id,
+                        ];
+                        if (onChangeCategory) {
+                          onChangeCategory(newCategory);
+                        }
+                      } else {
+                        const newCategory = selectedCategoryId?.filter(
+                          (id) => id !== v.id
+                        );
+                        if (onChangeCategory) {
+                          onChangeCategory(newCategory || []);
+                        }
+                      }
+                    }}
+                  />
                 ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem className="border-b" value="item-13">
+            <AccordionTrigger className="hover:cursor-pointer">
+              Sort By
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className="flex flex-col gap-2">
+                <CCheck
+                  label="Default"
+                  value={selectedSort === "createdAt"}
+                  onChange={(check) => {
+                    if (check) {
+                      if (onChangeSort) {
+                        onChangeSort("createdAt");
+                      }
+                    }
+                  }}
+                />
+                <CCheck
+                  label="Price Low to High"
+                  value={selectedSort === "priceAsc"}
+                  onChange={(check) => {
+                    if (check) {
+                      if (onChangeSort) {
+                        onChangeSort("priceAsc");
+                      }
+                    }
+                  }}
+                />
+                <CCheck
+                  label="Price High to Low"
+                  value={selectedSort === "priceDesc"}
+                  onChange={(check) => {
+                    if (check) {
+                      if (onChangeSort) {
+                        onChangeSort("priceDesc");
+                      }
+                    }
+                  }}
+                />
+                <CCheck
+                  label="Name A to Z"
+                  value={selectedSort === "nameAsc"}
+                  onChange={(check) => {
+                    if (check) {
+                      if (onChangeSort) {
+                        onChangeSort("nameAsc");
+                      }
+                    }
+                  }}
+                />
+                <CCheck
+                  label="Name Z to A"
+                  value={selectedSort === "nameDesc"}
+                  onChange={(check) => {
+                    if (check) {
+                      if (onChangeSort) {
+                        onChangeSort("nameDesc");
+                      }
+                    }
+                  }}
+                />
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -96,7 +202,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {shipping.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>
@@ -108,7 +214,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {payment.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>
@@ -152,15 +258,9 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-row gap-2 items-center">
                 <div className="flex flex-row gap-2 items-center">
-                  <Input
-                    placeholder="Min"
-                    className="focus:ring-inset"
-                  />
+                  <Input placeholder="Min" className="focus:ring-inset" />
                   -
-                  <Input
-                    placeholder="Max"
-                    className="focus:ring-inset"
-                  />
+                  <Input placeholder="Max" className="focus:ring-inset" />
                 </div>
                 <Button variant="default" size="default">
                   Ok
@@ -175,7 +275,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {top.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>
@@ -187,7 +287,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {storage.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>
@@ -199,7 +299,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {memory.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>
@@ -211,7 +311,7 @@ export default function SideFilter() {
             <AccordionContent>
               <div className="flex flex-col gap-2">
                 {warranty.map((v) => (
-                  <CCheck label={v} />
+                  <CCheck label={v} value={false} />
                 ))}
               </div>
             </AccordionContent>

@@ -11,7 +11,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: <HomePage/>,
       },
       {
         path: "product-detail/:slug",
@@ -19,7 +19,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: "search/:q",
-        element: <ProductSearch />,
+        element: <ProductSearch/>,
       },
     ],
   },
