@@ -1,8 +1,10 @@
 import { prisma } from "../../lib/prisma";
 import { z } from "zod";
 import { publicProcedure, route } from "../trpc";
+import type { Prisma } from "@prisma/client/edge";
 
-const productOrder = (orderBy: string) => {
+
+const productOrder = (orderBy: string): Prisma.productOrderByWithRelationInput => {
   if (orderBy === "priceAsc") {
     return {
       price: "asc",
