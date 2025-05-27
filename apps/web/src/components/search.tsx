@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "./ui/input";
 import { useWindowScrollPositions } from "@/lib/scroll";
-import { Button } from "./ui/button";
-import { FilterIcon } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { Skeleton } from "./ui/skeleton";
 
@@ -131,9 +129,6 @@ export default function Search({
               )}
             </div>
           )}
-          <Button variant="outline" size="icon">
-            <FilterIcon />
-          </Button>
         </div>
         {showDropdown && (
           <div

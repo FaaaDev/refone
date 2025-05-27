@@ -8,7 +8,7 @@ interface CCheckProps {
 
 export default function CCheck({ label, value, onChange }: CCheckProps) {
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-2" key={label}>
       <Checkbox
         id={label.replace(" ", "-").toLowerCase()}
         className="hover:cursor-pointer"
