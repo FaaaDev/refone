@@ -16,17 +16,17 @@ type ProductType = {
 }
 
 export default function ItemGrid({
-  key,
+  itemKey,
   product,
   onChat,
 }: {
-  key: string;
+  itemKey: string;
   product: ProductType;
   onChat: () => void
 }) {
   return (
     <div
-      key={key}
+      key={itemKey}
       className="flex flex-col overflow-hidden py-2 gap-2 border rounded-xl hover:shadow-lg hover:cursor-pointer"
     >
       <Link

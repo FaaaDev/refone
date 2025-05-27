@@ -1,7 +1,20 @@
 import { trpc } from "../lib/trpc";
-import SideFilter from "@/components/side_filter";
 import LoadingGrid from "@/components/loading_grid";
 import ItemGrid from "@/components/item_grid";
+import SideFilter from "@/components/side_filter";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { FilterIcon } from "lucide-react";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import Filter from "@/components/filter";
 
 type ProductType = {
   name: string;
@@ -15,9 +28,26 @@ type ProductType = {
   minimumOrderQuantity: number;
   createdAt: string;
   updatedAt: string;
-}
+  categoryId: string;
+};
+
+type CategoryType = {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export default function UsedPhonesPage() {
-  const { data, isLoading, isError } = trpc.product.all.useQuery<ProductType[]>();
+  const [category, setCategory] = useState<string[]>([]);
+  const [orderBy, setOrderBy] = useState<string>("createdAt");
+
+  const { data: dataCategory } = trpc.category.all.useQuery<CategoryType[]>();
+
+  const { data, isLoading, isError } = trpc.product.all.useQuery<ProductType[]>(
+    { category, orderBy }
+  );
 
   if (isLoading) {
     return <LoadingGrid />;
@@ -31,16 +61,72 @@ export default function UsedPhonesPage() {
     );
   }
   return (
-    <div className="p-4 md:p-8 max-w-full md:max-w-7xl mx-auto flex flex-row gap-0 md:gap-6">
-      <SideFilter />
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
-        {data.map((product: ProductType, idx: number) => (
-          <ItemGrid
-            key={`item-${idx + 1}`}
-            product={product || null}
-            onChat={() => {}}
-          />
-        ))}
+    <div className="pb-4 md:p-8 max-w-full md:max-w-7xl mx-auto flex flex-row gap-0 md:gap-6">
+      <SideFilter
+        selectedCategoryId={category}
+        selectedSort={orderBy}
+        onChangeCategory={(categories) => setCategory(categories)}
+        onChangeSort={(key) => setOrderBy(key)}
+      />
+      <div className="flex flex-col w-full">
+        <div className="flex flex-row gap-2 w-full md:hidden sticky top-17 bg-white px-4 pb-4 pt-2">
+          <div className="flex flex-row gap-2 w-full overflow-x-auto">
+            {dataCategory?.map((cat) => (
+              <Button
+                key={`${cat.slug}`}
+                variant="outline"
+                className={`${category?.some((id) => id === cat.id) || false ? "bg-sky-500/10 " : ""}hover:bg-sky-500/20`}
+                onClick={() => {
+                  if (!category?.some((id) => id === cat.id) || false) {
+                    const newCategory = [...(category || []), cat.id];
+                    setCategory(newCategory);
+                  } else {
+                    const newCategory = category?.filter((id) => id !== cat.id);
+                    setCategory(newCategory);
+                  }
+                }}
+              >
+                <p>{cat.name}</p>
+              </Button>
+            ))}
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <FilterIcon />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="z-1000">
+              <SheetHeader>
+                <SheetTitle>Filter</SheetTitle>
+              </SheetHeader>
+              <div className="p-4 overflow-y-auto">
+                <Filter
+                  selectedCategoryId={category}
+                  selectedSort={orderBy}
+                  onChangeCategory={(categories) => setCategory(categories)}
+                  onChangeSort={(key) => setOrderBy(key)}
+                />
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button type="submit">Apply Filter</Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="px-4 md:px-0 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full h-fit">
+          {data.map((product: ProductType, idx: number) => (
+            <div key={`container-${idx + 1}`}>
+              <ItemGrid
+                itemKey={`item-${idx + 1}`}
+                product={product || null}
+                onChat={() => {}}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

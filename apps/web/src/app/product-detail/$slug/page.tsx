@@ -11,18 +11,25 @@ import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import LoadingDetail from "@/components/loading_detail";
 
-const colors = ["Grey", "Mindnight", "Space Blue", "White"];
-const storage = ["128 GB", "256 GB", "512 GB", "1 TB"];
-const grade = ["S", "A+", "A", "B"];
+type Variant = {
+  id: string;
+  productId: string;
+  name: string;
+  value: string;
+  priceDiff: string;
+  stockDiff: number;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
   const { data, isLoading, isError } = trpc.product.detail.useQuery({
     slug: slug || "",
   });
-  const [selectedColor, setSelectedColor] = useState(0);
-  const [selectedStorage, setSelectedStorage] = useState(0);
-  const [selectedGrade, setSelectedGrade] = useState(0);
+  const [selectedVariants, setSelectedVariants] = useState<
+    Record<string, string>
+  >({});
   const [selectedImage, setSelectedImage] = useState("");
 
   useEffect(() => {
@@ -33,10 +40,23 @@ export default function ProductDetailPage() {
     if (!isLoading) setSelectedImage(data?.imageUrl || "");
   }, [isLoading]);
 
+  useEffect(() => {
+    if (!data?.variants) return;
+
+    const grouped = groupedVariants(data.variants);
+    const defaultSelected: Record<string, string> = {};
+
+    grouped.forEach((group) => {
+      if (group.items.length > 0) {
+        defaultSelected[group.variant] = group.items[0].id; 
+      }
+    });
+
+    setSelectedVariants(defaultSelected);
+  }, [data?.variants]);
+
   if (isLoading) {
-    return (
-      <LoadingDetail />
-    );
+    return <LoadingDetail />;
   }
 
   if (isError || !data) {
@@ -46,6 +66,23 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const groupedVariants = (variants: Variant[]) => {
+    const map = new Map<string, Variant[]>();
+
+    for (const variant of variants) {
+      if (!map.has(variant.name)) {
+        map.set(variant.name, []);
+      }
+      map.get(variant.name)?.push(variant);
+    }
+
+    return Array.from(map.entries()).map(([variant, items]) => ({
+      variant,
+      items,
+    }));
+  };
+
   return (
     <div>
       <div className="p-4 md:p-8 max-w-full md:max-w-7xl mx-auto space-y-6">
@@ -60,18 +97,19 @@ export default function ProductDetailPage() {
                   className="rounded-xl h-100 object-cover border"
                 />
                 <div className="flex flex-row gap-4">
-                  {[...[{ imageUrl: data?.imageUrl }], ...data?.galleries || []].map(
-                    (v) => {
-                      return (
-                        <img
-                          src={v.imageUrl || ""}
-                          alt=""
-                          className={`${selectedImage === v.imageUrl ? "border-primary border-4 " : "border "}rounded-md h-16 w-16 object-cover hover:border-4 hover:border-primary hover: cursor-pointer`}
-                          onClick={() => setSelectedImage(v?.imageUrl || "")}
-                        />
-                      );
-                    }
-                  )}
+                  {[
+                    ...[{ imageUrl: data?.imageUrl }],
+                    ...(data?.galleries || []),
+                  ].map((v) => {
+                    return (
+                      <img
+                        src={v.imageUrl || ""}
+                        alt=""
+                        className={`${selectedImage === v.imageUrl ? "border-primary border-4 " : "border "}rounded-md h-16 w-16 object-cover hover:border-4 hover:border-primary hover: cursor-pointer`}
+                        onClick={() => setSelectedImage(v?.imageUrl || "")}
+                      />
+                    );
+                  })}
                 </div>
               </div>
               {/* Product Details */}
@@ -84,59 +122,34 @@ export default function ProductDetailPage() {
                   <h1 className="text-2xl font-bold">US${data?.price}</h1>
                 </div>
                 {/* Product Variant */}
-                <div className="space-x-2 space-y-2 border-b pb-4">
-                  <p className="font-semi-bold text-sm">Color:</p>
-                  {colors.map((v, i) => {
-                    return (
-                      <Button
-                        key={v}
-                        variant="outline"
-                        className={`${selectedColor === i ? "bg-sky-500/10 " : ""}hover:bg-sky-500/20`}
-                        onClick={() => setSelectedColor(i)}
-                      >
-                        <p>{v}</p>
-                      </Button>
-                    );
-                  })}
-                </div>
-                <div className="space-x-2 space-y-2 border-b pb-4">
-                  <p className="font-semi-bold text-sm">Storage:</p>
-                  {storage.map((v, i) => {
-                    return (
-                      <Button
-                        key={v}
-                        variant="outline"
-                        className={`${selectedStorage === i ? "bg-sky-500/10 " : ""}hover:bg-sky-500/20`}
-                        onClick={() => setSelectedStorage(i)}
-                      >
-                        <p>{v}</p>
-                      </Button>
-                    );
-                  })}
-                </div>
-                <div className="space-x-2 space-y-2 border-b pb-4">
-                  <p className="font-semi-bold text-sm">Grade:</p>
-                  {grade.map((v, i) => {
-                    return (
-                      <Button
-                        key={v}
-                        variant="outline"
-                        className={`${selectedGrade === i ? "bg-sky-500/10 " : ""}hover:bg-sky-500/20`}
-                        onClick={() => setSelectedGrade(i)}
-                      >
-                        <p>{v}</p>
-                      </Button>
-                    );
-                  })}
-                </div>
+                {groupedVariants(data?.variants || []).map((group) => (
+                  <div className="space-x-2 space-y-2 border-b pb-4">
+                    <p className="font-semi-bold text-sm">{group.variant}:</p>
+                    {group.items.map((v, i) => {
+                      return (
+                        <Button
+                          key={`${group.variant}-${i}`}
+                          variant="outline"
+                          className={`${selectedVariants[group.variant] === v.id ? "bg-sky-500/10 " : ""}hover:bg-sky-500/20`}
+                          onClick={() =>
+                            setSelectedVariants((prev) => ({
+                              ...prev,
+                              [group.variant]: v.id,
+                            }))
+                          }
+                        >
+                          <p>{v.value}</p>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             </div>
             {/* Product Description */}
             <div className="flex flex-col gap-4 w-full mt-6">
               <h1 className="text-2xl font-bold">Product Description</h1>
-              <p>
-                {data.description}
-              </p>
+              <p>{data.description}</p>
             </div>
             {/* Product Spesification */}
             <div className="flex flex-col gap-4 w-full mt-6">

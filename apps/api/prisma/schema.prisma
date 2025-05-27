@@ -19,7 +19,13 @@ model product {
   minimumOrderQuantity  Int
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
-  galleries             product_gallery[] // <- Relasi satu ke banyak
+  galleries             product_gallery[]
+  category              category?          @relation(fields: [categoryId], references: [id])
+  categoryId            String?            @db.Uuid
+  variants              product_variant[]
+
+  @@index([name])
+  @@index([slug])
 }
 
 model product_gallery {
@@ -28,6 +34,27 @@ model product_gallery {
   productId String   @db.Uuid
   imageUrl  String
   createdAt DateTime @default(now())
+}
+
+model product_variant {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product    product  @relation(fields: [productId], references: [id])
+  productId  String   @db.Uuid
+  name       String   // Example: Size, Color, Storage
+  value      String   // Example: XL, Red, 128GB
+  priceDiff  Decimal  // Extra cost (+ or 0)
+  stockDiff  Int      // Optional if stock differs per variant
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model category {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String    @unique
+  slug      String    @unique
+  products  product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model search_query {
