@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import slugify from "slugify";
 import { nanoid } from "nanoid";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -527,7 +528,7 @@ async function main() {
     { query: "Pixel 9", count: 0 },
   ];
 
-  const categories = await prisma.category.createMany({
+  await prisma.category.createMany({
     data: [
       { name: "Iphone", slug: "iphone" },
       { name: "Samsung", slug: "samsung" },
@@ -587,6 +588,40 @@ async function main() {
 
     console.log(`Created search query: ${createdQuery.query}`);
   }
+
+  const password = await bcrypt.hash("password123", 10);
+
+  await prisma.user.create({
+    data: {
+      email: "user@example.com",
+      name: "Buyer",
+      password,
+      role: "USER",
+      accounts: {
+        create: {
+          accountId: "user@example.com",
+          providerId: "email",
+          password,
+        },
+      },
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "admin@example.com",
+      name: "Admin",
+      password,
+      role: "ADMIN",
+      accounts: {
+        create: {
+          accountId: "admin@example.com",
+          providerId: "email",
+          password,
+        },
+      },
+    },
+  });
 }
 
 main()
