@@ -595,7 +595,6 @@ async function main() {
     data: {
       email: "user@example.com",
       name: "Buyer",
-      password,
       role: "USER",
       accounts: {
         create: {
@@ -611,7 +610,6 @@ async function main() {
     data: {
       email: "admin@example.com",
       name: "Admin",
-      password,
       role: "ADMIN",
       accounts: {
         create: {

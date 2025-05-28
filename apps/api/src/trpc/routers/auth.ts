@@ -25,24 +25,16 @@ export const authRouter = route({
 
       const user = await prisma.user.findUnique({
         where: { email: input.email },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
-        },
       });
+
+      if (!user) {
+        throw new Error("Invalid email");
+      }
 
       const account = await prisma.account.findFirst({
         where: { userId: user?.id, providerId: "email" },
         select: { id: true, userId: true, password: true },
       });
-
-      if (!user) {
-        throw new Error("Invalid email or password");
-      }
 
       if (!account) {
         throw new Error("Account not found");
@@ -54,7 +46,7 @@ export const authRouter = route({
       );
 
       if (!isValidPassword) {
-        throw new Error("Invalid email or password");
+        throw new Error("Invalid password");
       }
 
       const token = signJwt({ userId: user.id });
