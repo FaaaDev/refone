@@ -27,7 +27,7 @@ export default function ItemGrid({
   return (
     <div
       key={itemKey}
-      className="flex flex-col overflow-hidden py-2 gap-2 border rounded-xl hover:shadow-lg hover:cursor-pointer"
+      className="flex flex-col overflow-hidden py-2 gap-2 border rounded-xl hover:shadow-lg hover:cursor-pointer h-full"
     >
       <Link
         to={`/product-detail/${product.slug}`}

@@ -12,6 +12,28 @@ Then in 7 days I can complete the main task in this technical test. Currently th
 
 ---
 
+## 🤯 Difficulties Encountered
+
+**1. Using Better Auth**
+
+When using better auth, I don't know why better auth doesn't work normally in my local. even though I have followed the instructions from the docs better auth, hono and trpc.
+from the results of googling about the implementation of trpc, hono, and better auth [from here](https://dev.to/ayoubphy/step-by-step-guide-setting-up-trpc-better-auth-prisma-and-react-router-v7-4ho), it can be concluded that better auth and hono can be accessed via createAuthClient on the frontend (client). Which in my opinion is not flexible if there will be cross-platform integration.
+So I decided to use manual Auth with jwt, so that it can run smoothly (because I usually use this).
+if there is more time to learn better auth, I'm sure there is a best practice to handle this problem.
+
+**2. zodResolver from @hookform/resolvers**
+
+I have a problem when handling validation from the front end, where I use React Hooks Form and zod for form and validation.
+but when I declare a resolver on useForm, there is an error that keeps popping up:
+
+```error TS2589: Type instantiation is excessively deep and possibly infinite.```
+
+which is disrupting the build process.
+I have searched for solutions and tried them, some suggested downgrading zod, some suggested defining types and so on.
+Because time is running out, I decided to use validation from the backend.
+
+---
+
 ## 🧰 Tech Stack
 
 ### Frontend
@@ -40,8 +62,16 @@ refone/
 │   │   │   ├── lib/         # Helpers (e.g., Prisma Client)
 │   │   │   ├── trpc/        # All route handlers
 │   │   │   └── index.ts     # Server entrypoint
-│   │   └── bun.lockb        # Bun lockfile
-│   └── web/                 # Frontend source (React + Tailwind)
+│   └── web/                 # Frontend source (Vite + Tailwind)
+│   │   ├── public/          
+│   │   ├── src/             
+│   │   │   ├── app/         # Also called page
+│   │   │   ├── assets/      # All assets (icons, image, etc)
+│   │   │   ├── components/  # Radix UI (shadcn) and other custom UI
+│   │   │   ├── lib/         # Helpers (e.g., Trpc Client)
+│   │   ├── index.css
+│   │   ├── main.tsx         # Entrypoint
+│   │   ├── routes.tsx       # Frontend routes is defined here
 ├── docker-compose.yml       # Docker Compose config
 └── README.md                # Project documentation
 ```
@@ -62,7 +92,7 @@ refone/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/refone.git
+git clone https://github.com/FaaaDev/refone.git
 cd refone
 ```
 

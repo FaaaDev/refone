@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,21 +9,21 @@ datasource db {
 }
 
 model product {
-  id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sku                   String            @unique
-  slug                  String            @unique
-  name                  String
-  description           String
-  price                 Decimal
-  imageUrl              String?
-  stockQuantity         Int
-  minimumOrderQuantity  Int
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  galleries             product_gallery[]
-  category              category?          @relation(fields: [categoryId], references: [id])
-  categoryId            String?            @db.Uuid
-  variants              product_variant[]
+  id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sku                  String            @unique
+  slug                 String            @unique
+  name                 String
+  description          String
+  price                Decimal
+  imageUrl             String?
+  stockQuantity        Int
+  minimumOrderQuantity Int
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  galleries            product_gallery[]
+  category             category?         @relation(fields: [categoryId], references: [id])
+  categoryId           String?           @db.Uuid
+  variants             product_variant[]
 
   @@index([name])
   @@index([slug])
@@ -37,15 +38,15 @@ model product_gallery {
 }
 
 model product_variant {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  product    product  @relation(fields: [productId], references: [id])
-  productId  String   @db.Uuid
-  name       String   // Example: Size, Color, Storage
-  value      String   // Example: XL, Red, 128GB
-  priceDiff  Decimal  // Extra cost (+ or 0)
-  stockDiff  Int      // Optional if stock differs per variant
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  product   product  @relation(fields: [productId], references: [id])
+  productId String   @db.Uuid
+  name      String // Example: Size, Color, Storage
+  value     String // Example: XL, Red, 128GB
+  priceDiff Decimal // Extra cost (+ or 0)
+  stockDiff Int // Optional if stock differs per variant
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model category {
@@ -65,4 +66,70 @@ model search_query {
   updatedAt DateTime @updatedAt
 
   @@unique([query])
+}
+
+enum role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String    @unique
+  email         String
+  emailVerified Boolean   @default(true)
+  image         String?
+  role          role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expiresAt DateTime
+  token     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  accountId             String
+  providerId            String
+  userId                String    @db.Uuid
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?  @default(now())
+  updatedAt  DateTime?  @updatedAt
+
+  @@map("verification")
 }

@@ -13,7 +13,9 @@
     "seed": "node prisma/build/seed.cjs"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",
+    "@types/jsonwebtoken": "^9.0.9",
     "bun-types": "^1.2.13"
   },
   "peerDependencies": {
@@ -23,9 +25,12 @@
     "@hono/trpc-server": "^0.3.4",
     "@prisma/client": "^6.8.2",
     "@trpc/server": "^11.1.2",
+    "bcrypt": "^6.0.0",
+    "better-auth": "^1.2.8",
     "hono": "^4.7.10",
+    "jsonwebtoken": "^9.0.2",
     "nanoid": "^5.1.5",
-    "prisma": "^6.8.2",
+    "prisma": "6.8.2",
     "slugify": "^1.6.6",
     "ts-node": "^10.9.2",
     "zod": "^3.24.4"
