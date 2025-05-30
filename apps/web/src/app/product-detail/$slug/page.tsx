@@ -371,7 +371,8 @@ export default function ProductDetailPage() {
               </p>
             </div>
           </div>
-          <div className="w-120 h-fit border rounded-xl sticky top-8 p-6 flex-col gap-4 hidden xl:flex">
+          {/* Order Navigation */}
+          <div className="w-120 h-fit border rounded-xl sticky top-22 p-6 flex-col gap-4 hidden xl:flex">
             <h6 className="font-bold pb-4">Process Order</h6>
             <div className="flex flex-row gap-2 justify-between items-center w-full">
               <p className="text-sm font-bold">Stock</p>

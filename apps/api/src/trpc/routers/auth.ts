@@ -4,10 +4,21 @@ import { publicProcedure, route } from "../trpc";
 import bcrypt from "bcrypt";
 import { prisma } from "../../lib/prisma";
 import { signJwt } from "../../lib/jwt";
+import { TRPCError } from "@trpc/server";
 
 export const authRouter = route({
   login: publicProcedure
-    .input(z.object({ email: z.string().email(), password: z.string().min(6) }))
+    .input(
+      z.object({
+        email: z
+          .string()
+          .email({ message: "Please enter valid email" })
+          .min(1, { message: "Email cannot empty" }),
+        password: z
+          .string()
+          .min(8, { message: "Password minimum is 8 charracter" }),
+      })
+    )
     .mutation(async ({ input }) => {
       // trying to use better-auth for email/password login, but giving errors:
       //   ERROR [Better Auth]: Credential account not found {
@@ -28,7 +39,10 @@ export const authRouter = route({
       });
 
       if (!user) {
-        throw new Error("Invalid email");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User not found",
+        });
       }
 
       const account = await prisma.account.findFirst({
@@ -37,16 +51,22 @@ export const authRouter = route({
       });
 
       if (!account) {
-        throw new Error("Account not found");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Credential account not found",
+        });
       }
 
       const isValidPassword = bcrypt.compareSync(
         input.password,
-        account.password
+        account?.password || ""
       );
 
       if (!isValidPassword) {
-        throw new Error("Invalid password");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Wrong Password. Please try again.",
+        });
       }
 
       const token = signJwt({ userId: user.id });
