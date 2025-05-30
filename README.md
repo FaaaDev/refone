@@ -189,7 +189,6 @@ bun run dev
 
 API will run on `http://localhost:3000` by default.
 
----
 
 ### 7. Setup Frontend (WEB)
 
