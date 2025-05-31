@@ -25,7 +25,7 @@ export function PasswordField({ control }: { control: Control<any> }) {
               <Input
                 type={isView ? "text" : "password"}
                 id="password"
-                placeholder=" "
+                placeholder="Password"
                 {...field}
               />
               {isView ? (

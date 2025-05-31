@@ -20,6 +20,7 @@ import { PasswordField } from "./ui/password_field";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z
@@ -40,14 +41,15 @@ export function LoginDialog({
 }) {
   const loginMutation = trpc.auth.login.useMutation();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<FormSchemaType>({
     // changing to validation from server because in here has error
     // error TS2589: Type instantiation is excessively deep and possibly infinite.
     // resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "admin@example.com",
+      password: "password123",
     },
   });
 
@@ -63,6 +65,11 @@ export function LoginDialog({
         // handle success
         console.log("Login success:", data);
         setLoading(false);
+        onOpenChange(false);
+        if (data?.user.role === "ADMIN") {
+          // redirect to admin dashboard
+          navigate("/admin");
+        }
       },
       onError: (error) => {
         // handle error, e.g., show error message
