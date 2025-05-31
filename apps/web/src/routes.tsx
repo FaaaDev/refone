@@ -31,7 +31,7 @@ export const routes: RouteObject[] = [
     children: [
       {
         index:true,
-        path: "master/product",
+        path: "inventory/product",
         element: <ProductList />,
       },
     ],

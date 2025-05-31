@@ -1,14 +1,16 @@
 import {
-    BadgeDollarSign,
+  BadgeDollarSign,
   Coins,
   Database,
   HandCoins,
   LayoutDashboard,
+  MessageSquareDot,
   Newspaper,
   ScanBarcode,
   ShoppingBag,
   ShoppingCart,
   SquarePercent,
+  Star,
 } from "lucide-react";
 
 import {
@@ -25,6 +27,34 @@ import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 
 export function AppSidebar() {
+  const nonGroupItems = [
+    {
+      title: "Dashboard",
+      url: "",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "Purchase",
+      url: "",
+      icon: ShoppingBag,
+    },
+    {
+      title: "Sales",
+      url: "",
+      icon: BadgeDollarSign,
+    },
+    {
+      title: "Chat",
+      url: "",
+      icon: MessageSquareDot,
+    },
+    {
+      title: "Ratings",
+      url: "",
+      icon: Star,
+    },
+  ];
+
   const items = [
     {
       group: "General",
@@ -35,7 +65,7 @@ export function AppSidebar() {
           icon: Database,
           isActive: true,
           items: [
-            { title: "Products", url: "/admin/master/product" },
+            { title: "Products", url: "/admin/inventory/product" },
             { title: "Categories", url: "" },
             { title: "Unit", url: "" },
           ],
@@ -51,12 +81,10 @@ export function AppSidebar() {
           ],
         },
         {
-          title: "Taxity",
+          title: "Taxation",
           url: "",
           icon: Coins,
-          items: [
-            { title: "Tax", url: "" },
-          ],
+          items: [{ title: "Tax", url: "" }],
         },
         {
           title: "Transaction",
@@ -120,30 +148,16 @@ export function AppSidebar() {
       <SidebarContent className="px-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Button
-                variant="ghost"
-                className="w-full text-left justify-start py-4 text-sm"
-              >
-                <LayoutDashboard /> Dashboard
-              </Button>
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <Button
-                variant="ghost"
-                className="w-full text-left justify-start py-4 text-sm"
-              >
-                <ShoppingBag /> Purchase
-              </Button>
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild>
-              <Button
-                variant="ghost"
-                className="w-full text-left justify-start py-4 text-sm"
-              >
-                <BadgeDollarSign /> Sales
-              </Button>
-            </SidebarMenuButton>
+            {nonGroupItems.map((item) => (
+              <SidebarMenuButton asChild key={item.title}>
+                <Button
+                  variant="ghost"
+                  className="w-full text-left justify-start py-4 text-sm font-normal"
+                >
+                  <item.icon /> {item.title}
+                </Button>
+              </SidebarMenuButton>
+            ))}
           </SidebarMenuItem>
         </SidebarMenu>
         {items.map((item) => (

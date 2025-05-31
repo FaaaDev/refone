@@ -61,7 +61,7 @@ export function SidebarItems({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Button variant="ghost" className="w-full text-left justify-start py-4 text-sm" onClick={() => navigate(subItem.url)}>
+                        <Button variant="ghost" className="w-full text-left justify-start py-4 text-sm font-normal" onClick={() => navigate(subItem.url)}>
                           {subItem.title}
                         </Button>
                       </SidebarMenuSubButton>
